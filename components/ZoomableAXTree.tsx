@@ -245,6 +245,20 @@ const ZoomableAXTree = forwardRef<VizHandle, Props>(
       };
     }, [data, highlightIds, filterRoles, width, height, onSelectNode]);
 
+    useEffect(() => {
+      const handler = (e: CustomEvent) => {
+        const nodeId = e.detail.nodeId;
+        d3.select(svgRef.current)
+          .selectAll("circle")
+          .attr("stroke-width", (d: any) => (d.data.nodeId === nodeId ? 4 : 1))
+          .attr("stroke", (d: any) =>
+            d.data.nodeId === nodeId ? "#FFD54F" : "#fff"
+          );
+      };
+      window.addEventListener("highlight-node", handler as any);
+      return () => window.removeEventListener("highlight-node", handler as any);
+    }, []);
+
     // Render minimap (small SVG) below main svg
     const minimapScale = 0.12;
     const minimapWidth = Math.max(180, Math.min(320, width * minimapScale));
