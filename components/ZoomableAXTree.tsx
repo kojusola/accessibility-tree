@@ -24,7 +24,7 @@ interface Props {
 }
 
 const colorByRole = (role?: string | number) => {
-  if (!role) return "#777";
+  if (!role) return "#FFFFFF";
   const r = String(role).toLowerCase();
   if (r.includes("heading")) return "#4F46E5";
   if (r.includes("button")) return "#059669";
@@ -177,13 +177,17 @@ const ZoomableAXTree = forwardRef<VizHandle, Props>(
       // Nodes
       const nodeG = g
         .selectAll(".node")
-        .data(root.descendants())
+        .data(
+          root.descendants().filter((d) => {
+            const roleStr = String(d.data.role?.value || "").toLowerCase();
+            return roleStr && roleStr !== "generic" && roleStr !== "none";
+          })
+        )
         .join("g")
         .attr("class", "node")
         .attr("transform", (d) => `translate(${d.y},${d.x})`)
         .style("cursor", "pointer")
         .on("click", (event, d) => {
-          // select + notify
           onSelectNode?.(d.data);
         });
 
